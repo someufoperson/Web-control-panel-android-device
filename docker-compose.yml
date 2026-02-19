@@ -1,0 +1,35 @@
+services:
+  telegram_bot:
+    build: telegram_bot
+    environment:
+      - TOKEN=${TG_BOT_TOKEN}
+      - LINK=${LINK}
+      - REDIRECT_LINK=${REDIRECT_LINK}
+    depends_on:
+      - backend
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  frontend:
+    build: react_app
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      - FASTAPI_HOST=${FASTAPI_HOST}
+      - FASTAPI_PORT=${FASTAPI_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - DB_URL=${DB_URL}
